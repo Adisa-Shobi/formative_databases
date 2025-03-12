@@ -16,6 +16,9 @@ router = APIRouter()
 # Country endpoints
 @router.post("/countries/", response_model=CountryResponse, status_code=status.HTTP_201_CREATED)
 def create_country(country: CountryCreate, db: Session = Depends(get_db)):
+    """
+    Create a new country entry
+    """
     db_country = db.query(Country).filter(Country.country_name == country.country_name).first()
     if db_country:
         raise HTTPException(status_code=400, detail="Country already exists")
@@ -28,11 +31,17 @@ def create_country(country: CountryCreate, db: Session = Depends(get_db)):
 
 @router.get("/countries/", response_model=List[CountryResponse])
 def read_countries(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Get a list of countries with pagination
+    """
     countries = db.query(Country).offset(skip).limit(limit).all()
     return countries
 
 @router.get("/countries/{country_id}", response_model=CountryResponse)
 def read_country(country_id: int, db: Session = Depends(get_db)):
+    """
+    Get a specific country by ID
+    """
     db_country = db.query(Country).filter(Country.country_id == country_id).first()
     if db_country is None:
         raise HTTPException(status_code=404, detail="Country not found")
@@ -40,6 +49,9 @@ def read_country(country_id: int, db: Session = Depends(get_db)):
 
 @router.put("/countries/{country_id}", response_model=CountryResponse)
 def update_country(country_id: int, country: CountryUpdate, db: Session = Depends(get_db)):
+    """
+    Update a country entry
+    """
     db_country = db.query(Country).filter(Country.country_id == country_id).first()
     if db_country is None:
         raise HTTPException(status_code=404, detail="Country not found")
@@ -54,6 +66,9 @@ def update_country(country_id: int, country: CountryUpdate, db: Session = Depend
 
 @router.delete("/countries/{country_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_country(country_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a country entry and all related data
+    """
     db_country = db.query(Country).filter(Country.country_id == country_id).first()
     if db_country is None:
         raise HTTPException(status_code=404, detail="Country not found")
@@ -65,6 +80,9 @@ def delete_country(country_id: int, db: Session = Depends(get_db)):
 # Producer endpoints
 @router.post("/producers/", response_model=ProducerResponse, status_code=status.HTTP_201_CREATED)
 def create_producer(producer: ProducerCreate, db: Session = Depends(get_db)):
+    """
+    Create a new producer entry
+    """
     db_country = db.query(Country).filter(Country.country_id == producer.country_id).first()
     if db_country is None:
         raise HTTPException(status_code=404, detail="Country not found")
@@ -77,6 +95,9 @@ def create_producer(producer: ProducerCreate, db: Session = Depends(get_db)):
 
 @router.get("/producers/", response_model=List[ProducerResponse])
 def read_producers(skip: int = 0, limit: int = 100, country_id: Optional[int] = None, db: Session = Depends(get_db)):
+    """
+    Get a list of producers with optional country_id filter and pagination
+    """
     query = db.query(Producer)
     if country_id:
         query = query.filter(Producer.country_id == country_id)
@@ -85,6 +106,9 @@ def read_producers(skip: int = 0, limit: int = 100, country_id: Optional[int] = 
 
 @router.get("/producers/{producer_id}", response_model=ProducerResponse)
 def read_producer(producer_id: int, db: Session = Depends(get_db)):
+    """
+    Get a specific producer by ID
+    """
     db_producer = db.query(Producer).filter(Producer.producer_id == producer_id).first()
     if db_producer is None:
         raise HTTPException(status_code=404, detail="Producer not found")
@@ -92,6 +116,9 @@ def read_producer(producer_id: int, db: Session = Depends(get_db)):
 
 @router.put("/producers/{producer_id}", response_model=ProducerResponse)
 def update_producer(producer_id: int, producer: ProducerUpdate, db: Session = Depends(get_db)):
+    """
+    Update a producer entry
+    """
     db_producer = db.query(Producer).filter(Producer.producer_id == producer_id).first()
     if db_producer is None:
         raise HTTPException(status_code=404, detail="Producer not found")
@@ -111,6 +138,9 @@ def update_producer(producer_id: int, producer: ProducerUpdate, db: Session = De
 
 @router.delete("/producers/{producer_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_producer(producer_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a producer entry and all related data
+    """
     db_producer = db.query(Producer).filter(Producer.producer_id == producer_id).first()
     if db_producer is None:
         raise HTTPException(status_code=404, detail="Producer not found")
@@ -122,6 +152,9 @@ def delete_producer(producer_id: int, db: Session = Depends(get_db)):
 # Coffee endpoints
 @router.post("/coffees/", response_model=CoffeeResponse, status_code=status.HTTP_201_CREATED)
 def create_coffee(coffee: CoffeeCreate, db: Session = Depends(get_db)):
+    """
+    Create a new coffee entry
+    """
     db_producer = db.query(Producer).filter(Producer.producer_id == coffee.producer_id).first()
     if db_producer is None:
         raise HTTPException(status_code=404, detail="Producer not found")
@@ -166,6 +199,9 @@ def read_coffees(
     quality_classification: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
+    """
+    Get a list of coffees with optional filters and pagination
+    """
     query = db.query(Coffee)
     
     if producer_id:
@@ -182,6 +218,9 @@ def read_coffees(
 
 @router.get("/coffees/{coffee_id}", response_model=CoffeeResponse)
 def read_coffee(coffee_id: int, db: Session = Depends(get_db)):
+    """
+    Get a specific coffee by ID
+    """
     db_coffee = db.query(Coffee).filter(Coffee.coffee_id == coffee_id).first()
     if db_coffee is None:
         raise HTTPException(status_code=404, detail="Coffee not found")
@@ -189,6 +228,9 @@ def read_coffee(coffee_id: int, db: Session = Depends(get_db)):
 
 @router.put("/coffees/{coffee_id}", response_model=CoffeeResponse)
 def update_coffee(coffee_id: int, coffee: CoffeeUpdate, db: Session = Depends(get_db)):
+    """
+    Update a coffee entry
+    """
     db_coffee = db.query(Coffee).filter(Coffee.coffee_id == coffee_id).first()
     if db_coffee is None:
         raise HTTPException(status_code=404, detail="Coffee not found")
@@ -232,6 +274,9 @@ def update_coffee(coffee_id: int, coffee: CoffeeUpdate, db: Session = Depends(ge
 
 @router.delete("/coffees/{coffee_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_coffee(coffee_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a coffee entry and all related data
+    """
     db_coffee = db.query(Coffee).filter(Coffee.coffee_id == coffee_id).first()
     if db_coffee is None:
         raise HTTPException(status_code=404, detail="Coffee not found")
@@ -243,6 +288,9 @@ def delete_coffee(coffee_id: int, db: Session = Depends(get_db)):
 # Cupping Score endpoints
 @router.post("/cupping-scores/", response_model=CuppingScoreResponse, status_code=status.HTTP_201_CREATED)
 def create_cupping_score(cupping_score: CuppingScoreCreate, db: Session = Depends(get_db)):
+    """
+    Create a new cupping score entry
+    """
     db_coffee = db.query(Coffee).filter(Coffee.coffee_id == cupping_score.coffee_id).first()
     if db_coffee is None:
         raise HTTPException(status_code=404, detail="Coffee not found")
@@ -282,6 +330,9 @@ def create_cupping_score(cupping_score: CuppingScoreCreate, db: Session = Depend
 
 @router.get("/cupping-scores/", response_model=List[CuppingScoreResponse])
 def read_cupping_scores(skip: int = 0, limit: int = 100, coffee_id: Optional[int] = None, db: Session = Depends(get_db)):
+    """
+    Get a list of cupping scores with optional coffee_id filter and pagination
+    """
     query = db.query(CuppingScore)
     
     if coffee_id:
@@ -292,6 +343,9 @@ def read_cupping_scores(skip: int = 0, limit: int = 100, coffee_id: Optional[int
 
 @router.get("/cupping-scores/{score_id}", response_model=CuppingScoreResponse)
 def read_cupping_score(score_id: int, db: Session = Depends(get_db)):
+    """
+    Get a specific cupping score by ID
+    """
     db_cupping_score = db.query(CuppingScore).filter(CuppingScore.score_id == score_id).first()
     if db_cupping_score is None:
         raise HTTPException(status_code=404, detail="Cupping score not found")
@@ -299,6 +353,9 @@ def read_cupping_score(score_id: int, db: Session = Depends(get_db)):
 
 @router.put("/cupping-scores/{score_id}", response_model=CuppingScoreResponse)
 def update_cupping_score(score_id: int, cupping_score: CuppingScoreUpdate, db: Session = Depends(get_db)):
+    """
+    Update a cupping score entry
+    """
     db_cupping_score = db.query(CuppingScore).filter(CuppingScore.score_id == score_id).first()
     if db_cupping_score is None:
         raise HTTPException(status_code=404, detail="Cupping score not found")
@@ -339,6 +396,9 @@ def update_cupping_score(score_id: int, cupping_score: CuppingScoreUpdate, db: S
 
 @router.delete("/cupping-scores/{score_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_cupping_score(score_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a cupping score entry
+    """
     db_cupping_score = db.query(CuppingScore).filter(CuppingScore.score_id == score_id).first()
     if db_cupping_score is None:
         raise HTTPException(status_code=404, detail="Cupping score not found")
@@ -346,3 +406,34 @@ def delete_cupping_score(score_id: int, db: Session = Depends(get_db)):
     db.delete(db_cupping_score)
     db.commit()
     return None
+
+# Latest entry endpoints
+@router.get("/coffees/latest/", response_model=CoffeeResponse)
+def get_latest_coffee(db: Session = Depends(get_db)):
+    """
+    Get the most recently added coffee entry
+    """
+    latest_coffee = db.query(Coffee).order_by(Coffee.created_at.desc()).first()
+    if latest_coffee is None:
+        raise HTTPException(status_code=404, detail="No coffee entries found")
+    return latest_coffee
+
+@router.get("/producers/latest/", response_model=ProducerResponse)
+def get_latest_producer(db: Session = Depends(get_db)):
+    """
+    Get the most recently added producer
+    """
+    latest_producer = db.query(Producer).order_by(Producer.created_at.desc()).first()
+    if latest_producer is None:
+        raise HTTPException(status_code=404, detail="No producer entries found")
+    return latest_producer
+
+@router.get("/cupping-scores/latest/", response_model=CuppingScoreResponse)
+def get_latest_cupping_score(db: Session = Depends(get_db)):
+    """
+    Get the most recently added cupping score
+    """
+    latest_score = db.query(CuppingScore).order_by(CuppingScore.created_at.desc()).first()
+    if latest_score is None:
+        raise HTTPException(status_code=404, detail="No cupping score entries found")
+    return latest_score
