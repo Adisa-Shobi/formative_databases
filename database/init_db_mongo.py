@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
-import pymongo
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
-from datetime import datetime
-import pandas as pd
-import certifi
 
 def connect_to_mongodb(connection_str, ca_certs=None):
     """
