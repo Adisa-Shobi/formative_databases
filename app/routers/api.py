@@ -410,12 +410,22 @@ def delete_cupping_score(score_id: int, db: Session = Depends(get_db)):
 # Latest entry endpoints
 @router.get("/coffees/latest/", response_model=CoffeeResponse)
 def get_latest_coffee(db: Session = Depends(get_db)):
-    """
-    Get the most recently added coffee entry
-    """
+    print("Fetching latest coffee...")
+    count = db.query(Coffee).count()
+    print(f"Total coffee count: {count}")
+    
+    if count > 0:
+        # Show a sample coffee to verify data
+        sample = db.query(Coffee).first()
+        print(f"Sample coffee: ID={sample.coffee_id}, Producer={sample.producer_id}")
+    
     latest_coffee = db.query(Coffee).order_by(Coffee.created_at.desc()).first()
+    
     if latest_coffee is None:
+        print("No latest coffee found!")
         raise HTTPException(status_code=404, detail="No coffee entries found")
+    
+    print(f"Found latest coffee: ID={latest_coffee.coffee_id}")
     return latest_coffee
 
 @router.get("/producers/latest/", response_model=ProducerResponse)

@@ -106,7 +106,7 @@ class CountryResponse(CountryBase):
     country_id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ProducerBase(BaseModel):
     company_name: str
@@ -136,7 +136,7 @@ class ProducerResponse(ProducerBase):
     created_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CoffeeBase(BaseModel):
     producer_id: int
@@ -189,7 +189,7 @@ class CoffeeResponse(CoffeeBase):
     updated_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CuppingScoreBase(BaseModel):
     coffee_id: int
@@ -233,4 +233,4 @@ class CuppingScoreResponse(CuppingScoreBase):
     created_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
